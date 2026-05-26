@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CivicLens — John Cornyn</title>
+<style>
+:root {
+  --bg: #14110d;
+  --fg: #f5f1e8;
+  --fg-dim: #a59f8e;
+  --fg-muted: #6b6557;
+  --line: #2e2a22;
+  --accent: #f5f1e8;
+  --p-d: #79b8ff;
+  --p-r: #d65a5a;
+  --p-i: #9aa0a6;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  background: var(--bg); color: var(--fg);
+  font-feature-settings: 'kern' 1;
+}
+header h1, h2 {
+  font-family: 'Charter', 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.num, td.num, .tc-asset, .tc-vote-row, .vote-count, .pac-totals, .kv .v {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+header { padding: 24px 32px 12px; border-bottom: 1px solid var(--line); }
+header h1 { margin: 0 0 4px; font-size: 20px; letter-spacing: -0.01em; }
+header .sub { color: var(--fg-dim); font-size: 13px; }
+header a { color: var(--accent); text-decoration: none; }
+main { padding: 24px 32px 64px; max-width: 1200px; }
+h2 { font-size: 19px; margin: 48px 0 14px; letter-spacing: -0.01em; }
+h2:first-child { margin-top: 0; }
+.lede { color: var(--fg-dim); margin: 0 0 24px; max-width: 720px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 6px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--fg-dim); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+tbody tr:hover { background: rgba(255,255,255,0.02); }
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.dim { color: var(--fg-dim); }
+.muted { color: var(--fg-muted); }
+.tag { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 11px; line-height: 1.5; border: 1px solid var(--line); }
+.tag.p-d { color: var(--p-d); border-color: var(--p-d); }
+.tag.p-r { color: var(--p-r); border-color: var(--p-r); }
+.tag.p-i { color: var(--p-i); border-color: var(--p-i); }
+.tag.same-day { color: var(--accent); border-color: var(--accent); }
+.tag.jurisdiction { color: #f7c948; border-color: #f7c948; background: rgba(247, 201, 72, 0.06); cursor: help; }
+.tag.holder-spouse { color: #c585e0; border-color: #c585e0; }
+.tag.holder-joint  { color: #79b8ff; border-color: #79b8ff; }
+.tag.holder-self   { color: #9aa0a6; }
+a.member { color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--line); }
+a.member:hover { border-bottom-color: var(--accent); color: var(--accent); }
+.kv { display: grid; grid-template-columns: 200px 1fr; gap: 6px 16px; margin: 12px 0 24px; font-size: 13px; }
+.kv .k { color: var(--fg-dim); }
+.notice { padding: 10px 14px; background: rgba(121, 184, 255, 0.06); border: 1px solid rgba(121, 184, 255, 0.2); border-radius: 4px; font-size: 13px; color: var(--fg-dim); margin-bottom: 24px; }
+.trade-activity { margin: 0 0 24px; }
+.suspicion-badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 500; border: 1px solid var(--line); color: var(--fg-dim); }
+.suspicion-badge.medium { border-color: var(--fg-dim); color: var(--fg); font-weight: 600; }
+.suspicion-badge.high   { border-color: var(--fg);     color: var(--fg); font-weight: 700; }
+.bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; width: 80px; margin-right: 6px; }
+.bar > div { height: 100%; background: var(--accent); }
+footer { padding: 24px 32px; color: var(--fg-muted); font-size: 12px; border-top: 1px solid var(--line); }
+footer a { color: var(--fg-dim); }
+.row-link { color: var(--accent); text-decoration: none; font-size: 11px; }
+.row-link:hover { text-decoration: underline; }
+.vote-count { display: inline-block; min-width: 22px; padding: 1px 6px; border-radius: 10px; background: var(--line); font-size: 11px; text-align: center; }
+.same-day .vote-count { background: rgba(121, 184, 255, 0.15); color: var(--accent); }
+.filter-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.filter-input { background: var(--bg); border: 1px solid var(--line); color: var(--fg); border-radius: 4px; padding: 5px 10px; font-size: 13px; width: 280px; outline: none; }
+.filter-input:focus { border-color: var(--accent); }
+.filter-input::placeholder { color: var(--fg-muted); }
+.filter-toggle { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--fg-dim); cursor: pointer; user-select: none; }
+.filter-toggle input { accent-color: var(--accent); cursor: pointer; }
+.filter-count { font-size: 12px; color: var(--fg-muted); margin-left: auto; }
+/* Trade card layout */
+.trade-card { border: 1px solid var(--line); border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; transition: border-color .15s; }
+.trade-card:hover { border-color: #3a3e45; }
+/* Intensity-mapped rendering — weight + density only. No moralizing color.
+   Quiet members render quiet pages; loud members render loud pages.
+   Per docs/superpowers/specs/2026-05-10-visual-identity-design.md. */
+.trade-card.intensity-low    { border-left: 1px solid var(--line);    padding: 6px 12px; }
+.trade-card.intensity-low .tc-asset    { font-weight: 400; font-size: 13px; }
+.trade-card.intensity-medium { border-left: 2px solid var(--fg-dim);  padding: 10px 14px; padding-left: 12px; }
+.trade-card.intensity-medium .tc-asset { font-weight: 500; font-size: 13px; }
+.trade-card.intensity-high   { border-left: 3px solid var(--fg);      padding: 12px 16px; padding-left: 13px; }
+.trade-card.intensity-high .tc-asset   { font-weight: 600; font-size: 14px; }
+.trade-card .tc-header { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.trade-card .tc-asset { font-size: 14px; font-weight: 500; flex: 1; min-width: 180px; }
+.trade-card .tc-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--fg-dim); }
+.trade-card .tc-votes { margin-top: 6px; border-top: 1px solid var(--line); padding-top: 6px; }
+.trade-card .tc-vote-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; font-size: 12px; }
+.trade-card .tc-vote-row:last-child { margin-bottom: 0; }
+.tag.before { color: #f7c948; border-color: rgba(247,201,72,0.4); background: rgba(247,201,72,0.06); }
+.tag.same-day { color: var(--accent); border-color: var(--accent); }
+.tag.after { color: var(--fg-muted); border-color: var(--fg-muted); opacity: 0.7; }
+.tag.bill-match { color: #4caf7d; border-color: rgba(76,175,125,0.4); background: rgba(76,175,125,0.06); cursor: help; }
+.section-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.section-tab { padding: 6px 14px; font-size: 13px; color: var(--fg-dim); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; user-select: none; }
+.section-tab.active { color: var(--fg); border-bottom-color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.pac-totals { display: flex; gap: 16px; margin: 8px 0 4px; font-size: 13px; }
+.pac-side { padding: 4px 10px; border: 1px solid var(--line); border-radius: 3px; }
+.pac-side.support { color: #4caf7d; border-color: rgba(76,175,125,0.4); }
+.pac-side.oppose  { color: #e07840; border-color: rgba(224,120,64,0.4); }
+.pac-list { display: flex; flex-direction: column; gap: 8px; }
+.pac-row { border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; }
+.pac-row .pac-name { margin-bottom: 4px; }
+.pac-row .pac-amount { font-size: 13px; }
+.glance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; margin: 8px 0 16px; overflow: hidden; }
+.glance-cell { background: var(--bg); padding: 12px 14px; }
+.glance-value { font-size: 22px; font-weight: 500; color: var(--fg); line-height: 1.1; }
+.glance-label { font-size: 11px; color: var(--fg-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+<header>
+  <h1>CivicLens</h1>
+  <div class="sub"><a href="../index.html">Corpus</a> · John Cornyn · generated 2026-05-25 22:14Z</div>
+</header>
+<main>
+
+<h2>John Cornyn</h2>
+<div class="kv">
+    <div class="k">Party</div>            <div><span class="tag p-r">Republican</span></div>
+    <div class="k">Chamber</div>          <div>senate</div>
+    <div class="k">State / district</div> <div>TX</div>
+    <div class="k">Bioguide</div>         <div><span class="muted">—</span></div>
+    <div class="k">FEC candidate</div>    <div><span class="muted">—</span></div>
+  </div>
+<p class="lede">John Cornyn III is an American politician and former judge who is the senior United States senator from Texas, a seat he has held since 2002.  He is a member of the Republican Party.</p>
+
+<h2>Activity at a glance</h2>
+<p class="lede" style="margin-bottom:8px;">118th Congress, 2023–2025 cycle. Counts only.</p>
+<div class="glance-grid">
+  <div class="glance-cell"><div class="glance-value">0</div><div class="glance-label">Trades</div></div>
+  <div class="glance-cell"><div class="glance-value">$0</div><div class="glance-label">Trade volume</div></div>
+  <div class="glance-cell"><div class="glance-value">0</div><div class="glance-label">Votes cast</div></div>
+  <div class="glance-cell"><div class="glance-value">0</div><div class="glance-label">Bills sponsored (all-time)</div></div>
+  <div class="glance-cell"><div class="glance-value">pac</div><div class="glance-label">Top donor type</div></div>
+  <div class="glance-cell"><div class="glance-value">0</div><div class="glance-label">Distinct tickers traded</div></div>
+  <div class="glance-cell"><div class="glance-value">0</div><div class="glance-label">Trades within 14d of related vote</div></div>
+</div>
+
+
+<h2>Timeline</h2>
+<p class="lede" style="margin-bottom:8px;">Votes (circles, top row) and trades (diamonds, bottom row) plotted on the same axis. Hover for detail. One dot per month — most significant vote shown (Nay preferred over Yea).</p>
+<p class="muted">No dated records to display on timeline.</p>
+
+<h2>Trades &amp; bills</h2>
+<p class="lede" style="margin-bottom:12px;">
+  Showing <strong>0</strong> discretionary equity trades made <em>before</em> a vote within 90 days.
+  T-bills, ETFs, index funds, munis, and bonds excluded — they carry no single-company vote nexus.
+  
+</p>
+<div class="section-tabs" id="tabs-john-cornyn">
+  <div class="section-tab active" onclick="showTab('tabs-john-cornyn','focused')" data-tab="focused">Focused (before-vote, discretionary)</div>
+  <div class="section-tab" onclick="showTab('tabs-john-cornyn','all')" data-tab="all" id="all-trades-tab">All trades (0)</div>
+</div>
+<div class="tab-panel active" data-panel-for="tabs-john-cornyn" data-panel="focused">
+<p class="muted">No PFD trades in DB. Run the loader if expected.</p>
+</div>
+<div class="tab-panel" data-panel-for="tabs-john-cornyn" data-panel="all">
+<p class="muted">No trades in DB.</p>
+</div>
+<script>
+function showTab(tabGroupId, panelName) {
+  document.querySelectorAll('#' + tabGroupId + ' .section-tab').forEach(function(el) {
+    el.classList.toggle('active', el.dataset.tab === panelName);
+  });
+  document.querySelectorAll('[data-panel-for="' + tabGroupId + '"]').forEach(function(el) {
+    el.classList.toggle('active', el.dataset.panel === panelName);
+  });
+}
+</script>
+
+<h2>Top donors (lifetime, 4-cycle FEC union)</h2>
+<table>
+<thead><tr><th>Donor</th><th>Type</th><th class="num">Lifetime amount</th><th>Most recent</th><th>Source</th></tr></thead>
+<tbody>
+  <tr>
+    <td>Cornyn victory committee</td>
+    <td><span class="muted">pac</span></td>
+    <td class="num">$164.8K</td>
+    <td><span class="muted">2024-09-25</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Cornyn majority texas</td>
+    <td><span class="muted">pac</span></td>
+    <td class="num">$125.5K</td>
+    <td><span class="muted">2024-12-31</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Lonestar victory fund</td>
+    <td><span class="muted">pac</span></td>
+    <td class="num">$117.5K</td>
+    <td><span class="muted">2024-12-31</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Winred</td>
+    <td><span class="muted">pac</span></td>
+    <td class="num">$37.1K</td>
+    <td><span class="muted">2023-03-20</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Ubs financial services inc.</td>
+    <td><span class="muted">corporation</span></td>
+    <td class="num">$14.4K</td>
+    <td><span class="muted">2024-09-02</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Thompson, Jere w. mr. jr.</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$13.2K</td>
+    <td><span class="muted">2023-03-15</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Stephens, Steve mr.</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$10.0K</td>
+    <td><span class="muted">2024-05-14</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Hilyard, Gretchen</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$9.2K</td>
+    <td><span class="muted">2024-03-23</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Black, Elizabeth g. mrs.</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$9.2K</td>
+    <td><span class="muted">2024-03-23</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Wood, Anthony mr.</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$6.6K</td>
+    <td><span class="muted">2024-07-11</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Singer, Paul</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$6.6K</td>
+    <td><span class="muted">2023-07-06</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Griffin, Marcus mr.</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$6.6K</td>
+    <td><span class="muted">2023-07-20</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Culp, Tim mr.</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$6.6K</td>
+    <td><span class="muted">2023-07-20</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Cash, Ashley ms.</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$6.6K</td>
+    <td><span class="muted">2023-07-20</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr>
+  <tr>
+    <td>Rayes, Patrick</td>
+    <td><span class="muted">individual</span></td>
+    <td class="num">$6.6K</td>
+    <td><span class="muted">2023-04-05</span></td>
+    <td><a class="row-link" href="https://www.fec.gov/data/committee/C00369033/" target="_blank" rel="noopener">FEC</a></td>
+  </tr></tbody>
+</table>
+
+<h2>Shared-donor peers in corpus</h2>
+<table>
+<thead><tr><th>Peer</th><th class="num">Shared donors</th><th class="num">Combined amount</th></tr></thead>
+<tbody>
+  <tr>
+    <td><a class="member" href="jason-smith.html">Jason Smith</a></td>
+    <td class="num">1</td>
+    <td class="num">$20.2K</td>
+  </tr></tbody>
+</table>
+
+
+
+
+<h2>Co-sponsorship</h2>
+<p class="lede" style="margin-bottom:8px;">Top peers by shared bills in the loaded corpus. <a class="row-link" href="../network.html">→ Full co-sponsorship network</a></p>
+<table>
+  <thead><tr><th>Peer</th><th class="num">Shared bills</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><a class="member" href="tommy-tuberville.html">Tommy Tuberville</a> <span class="tag p-r" style="margin-left:4px;">Republican</span></td>
+      <td class="num">1</td>
+    </tr>
+    <tr>
+      <td><a class="member" href="lindsey-graham.html">Lindsey Graham</a> <span class="tag p-r" style="margin-left:4px;">Republican</span></td>
+      <td class="num">1</td>
+    </tr></tbody>
+</table>
+
+
+
+<h2>Patterns detected</h2>
+<p class="muted">No patterns detected at current thresholds.</p>
+
+<p style="margin-top: 32px;"><a class="row-link" href="../index.html">← back to corpus</a></p>
+
+</main>
+<footer>
+Built from primary sources: Congress.gov, GovTrack, OpenFEC, House Clerk PFDs.
+Every claim links to its source. Voice rules: evidence before opinion — no editorial scoring.
+</footer>
+</body>
+</html>
